@@ -19,7 +19,8 @@ namespace WebAtividadeEntrevista.Controllers
 
         public ActionResult Incluir()
         {
-            return View();
+            ClienteModel clienteModel = new ClienteModel();
+            return View(clienteModel);
         }
 
         [HttpPost]
@@ -44,6 +45,7 @@ namespace WebAtividadeEntrevista.Controllers
                     CEP = model.CEP,
                     Cidade = model.Cidade,
                     Email = model.Email,
+                    Cpf = model.Cpf,
                     Estado = model.Estado,
                     Logradouro = model.Logradouro,
                     Nacionalidade = model.Nacionalidade,
@@ -79,6 +81,7 @@ namespace WebAtividadeEntrevista.Controllers
                     CEP = model.CEP,
                     Cidade = model.Cidade,
                     Email = model.Email,
+                    Cpf = model.Cpf,
                     Estado = model.Estado,
                     Logradouro = model.Logradouro,
                     Nacionalidade = model.Nacionalidade,
@@ -96,7 +99,7 @@ namespace WebAtividadeEntrevista.Controllers
         {
             BoCliente bo = new BoCliente();
             Cliente cliente = bo.Consultar(id);
-            Models.ClienteModel model = null;
+            Models.ClienteModel model = new ClienteModel();
 
             if (cliente != null)
             {
@@ -106,6 +109,7 @@ namespace WebAtividadeEntrevista.Controllers
                     CEP = cliente.CEP,
                     Cidade = cliente.Cidade,
                     Email = cliente.Email,
+                    Cpf = cliente.Cpf,
                     Estado = cliente.Estado,
                     Logradouro = cliente.Logradouro,
                     Nacionalidade = cliente.Nacionalidade,

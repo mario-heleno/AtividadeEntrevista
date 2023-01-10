@@ -26,6 +26,12 @@ namespace WebAtividadeEntrevista.Models
         public string Cidade { get; set; }
 
         /// <summary>
+        /// Cpf
+        /// </summary>
+        [Required]
+        public string Cpf { get; set; }
+
+        /// <summary>
         /// E-mail
         /// </summary>
         [RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "Digite um e-mail válido")]
