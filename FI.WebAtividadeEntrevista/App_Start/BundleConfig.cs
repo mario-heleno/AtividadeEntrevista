@@ -32,6 +32,8 @@ namespace WebAtividadeEntrevista
                       "~/Scripts/Clientes/FI.ListClientes.js"));
             bundles.Add(new ScriptBundle("~/bundles/altClientes").Include(
                       "~/Scripts/Clientes/FI.AltClientes.js"));
+            bundles.Add(new StyleBundle("~/bundles/opeClientes").Include(
+                      "~/Scripts/Clientes/Fl.OperacoesCliente.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",

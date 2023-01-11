@@ -1,11 +1,39 @@
-﻿
+﻿let quantidadeBen = 0;
+
 $(document).ready(function () {
     $('#BtBeneficiarios').click(function () {
-        ModalDialog('Beneficiários', 'Loading');
+        $('#ModalBeneficiarios').modal('show');
+    });
+
+    $('#BtIncluirBeneficiario').click(function () {
+        const cpf = $('#CpfBeneficiario').val();
+        const nome = $('#NomeBeneficiario').val();
+
+        const beneficiario = {
+            Cpf: cpf,
+            Nome: nome
+        };
+
+        IncluirBeneficiario(beneficiario);
     });
 
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
+
+        const beneficiariosInvalidos = [];
+        const beneficiarios = coletarBeneficiarios();
+
+        beneficiarios.forEach(function (bn) {
+            if (!validarCPF(bn.Cpf)) {
+                beneficiariosInvalidos.push(`Beneficiario ${bn.Nome} possui CPF inválido, por favor revisar antes de prosseguir`);
+            }
+        });
+
+        if (beneficiariosInvalidos.length > 0) {
+            ModalDialog("Erro", beneficiariosInvalidos.join('.<br>'));
+            return;
+        };
+
         $.ajax({
             url: urlPost,
             method: "POST",
@@ -19,7 +47,8 @@ $(document).ready(function () {
                 "Estado": $(this).find("#Estado").val(),
                 "Cidade": $(this).find("#Cidade").val(),
                 "Logradouro": $(this).find("#Logradouro").val(),
-                "Telefone": $(this).find("#Telefone").val()
+                "Telefone": $(this).find("#Telefone").val(),
+                "Beneficiarios": beneficiarios
             },
             error:
             function (r) {
@@ -60,4 +89,61 @@ function ModalDialog(titulo, texto) {
 
     $('body').append(texto);
     $('#' + random).modal('show');
+}
+
+function IncluirBeneficiario(beneficiario) {
+
+    // Verifica se os campos estão preenchidos
+    if (!beneficiario.Cpf || !beneficiario.Nome) {
+        ModalDialog("Erro", 'CPF e Nome devem ser preenchidos');
+        return;
+    }
+
+    // Verifica se CPF já existe na lista
+    const beneficiarios = coletarBeneficiarios();
+
+    const cpfExistente = beneficiarios.some(function (bn) {
+        return beneficiario.Cpf === bn.Cpf;
+    });
+
+    if (cpfExistente) {
+        ModalDialog("Erro", 'CPF já existente na lista');
+        return;
+    }
+
+    // Inclusão
+    const idx = quantidadeBen++;
+
+    const htmlRegistro = `
+        <tr id="ben-${idx}">
+            <th id="ben-cpf-${idx}">${beneficiario.Cpf}</th>
+            <th id="ben-nome-${idx}">${beneficiario.Nome}</th>
+            <th>
+                <button type="button" onclick="$('#ben-${idx}').remove();" class="btn btn-sm btn-info">Excluir</button>
+            </th>
+        </tr>
+    `;
+
+    $('#BenTableBody').append(htmlRegistro);
+
+    // Limpando Input
+    $('#CpfBeneficiario').val("");
+    $('#NomeBeneficiario').val("");
+}
+
+function coletarBeneficiarios() {
+    const beneficiarios = [];
+
+    for (var i = 0; i < quantidadeBen; i++) {
+        const id = '#ben-' + i;
+        const registro = $(id);
+        if (registro.length > 0) {
+            beneficiarios.push({
+                Cpf: $('#ben-cpf-' + i)[0].firstChild.data,
+                Nome: $('#ben-nome-' + i)[0].firstChild.data
+            });
+        }
+    }
+
+    return beneficiarios;
 }

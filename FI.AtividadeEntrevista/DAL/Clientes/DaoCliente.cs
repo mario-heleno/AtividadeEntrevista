@@ -39,9 +39,12 @@ namespace FI.AtividadeEntrevista.DAL
             // Cadastrar Beneficiarios
             if (cliente.Beneficiarios.Count > 0)
             {
+                DaoBeneficiario daoBeneficiario = new DaoBeneficiario();
+                Cliente clienteCadastrado = ConsultarPorCpf(cliente.Cpf);
+
                 foreach (Beneficiario beneficiario in cliente.Beneficiarios)
                 {
-                    DaoBeneficiario daoBeneficiario = new DaoBeneficiario();
+                    beneficiario.IdCliente = clienteCadastrado.Id;
                     daoBeneficiario.Incluir(beneficiario);
                 }
             }
@@ -61,6 +64,31 @@ namespace FI.AtividadeEntrevista.DAL
             parametros.Add(new System.Data.SqlClient.SqlParameter("Id", Id));
 
             DataSet ds = base.Consultar("FI_SP_ConsCliente", parametros);
+            List<DML.Cliente> cli = Converter(ds);
+            
+            Cliente cliente = cli.FirstOrDefault();
+
+            if (cliente != null)
+            {
+                DaoBeneficiario daoBeneficiario = new DaoBeneficiario();
+                List<Beneficiario> beneficiarios = daoBeneficiario.Listar(cli.FirstOrDefault().Id);
+                cliente.Beneficiarios = beneficiarios;
+            }
+
+            return cliente;
+        }
+
+        /// <summary>
+        /// Consulta os dados de um cliente
+        /// </summary>
+        /// <param name="Cpf">Id do cliente</param>
+        internal DML.Cliente ConsultarPorCpf(string Cpf)
+        {
+            List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
+
+            parametros.Add(new System.Data.SqlClient.SqlParameter("CPF", Cpf));
+
+            DataSet ds = base.Consultar("FI_SP_ConsClienteV2", parametros);
             List<DML.Cliente> cli = Converter(ds);
             
             Cliente cliente = cli.FirstOrDefault();

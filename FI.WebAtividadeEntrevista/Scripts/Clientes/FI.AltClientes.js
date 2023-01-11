@@ -30,14 +30,24 @@ $(document).ready(function () {
         };
 
         IncluirBeneficiario(beneficiario);
-
-        // Limpando Input
-        $('#CpfBeneficiario').val("");
-        $('#NomeBeneficiario').val("");
     });
 
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
+
+        const beneficiariosInvalidos = [];
+        const beneficiarios = coletarBeneficiarios();
+
+        beneficiarios.forEach(function (bn) {
+            if (!validarCPF(bn.Cpf)) {
+                beneficiariosInvalidos.push(`Beneficiario ${bn.Nome} possui CPF inválido, por favor revisar antes de prosseguir`);
+            }
+        });
+
+        if (beneficiariosInvalidos.length > 0) {
+            ModalDialog("Erro", beneficiariosInvalidos.join('.<br>'));
+            return;
+        };
         
         $.ajax({
             url: urlPost,
@@ -53,7 +63,7 @@ $(document).ready(function () {
                 "Logradouro": $(this).find("#Logradouro").val(),
                 "Telefone": $(this).find("#Telefone").val(),
                 "Cpf": $(this).find("#Cpf").val(),
-                "Beneficiarios": coletarBeneficiario()
+                "Beneficiarios": beneficiarios
             },
             error:
             function (r) {
@@ -98,6 +108,26 @@ function ModalDialog(titulo, texto) {
 }
 
 function IncluirBeneficiario(beneficiario) {
+
+    // Verifica se os campos estão preenchidos
+    if (!beneficiario.Cpf || !beneficiario.Nome) {
+            ModalDialog("Erro", 'CPF e Nome devem ser preenchidos');
+            return;
+    }
+
+    // Verifica se CPF já existe na lista
+    const beneficiarios = coletarBeneficiarios();
+
+    const cpfExistente = beneficiarios.some(function (bn) {
+        return beneficiario.Cpf === bn.Cpf;
+    });
+
+    if (cpfExistente) {
+        ModalDialog("Erro", 'CPF já existente na lista');
+        return;
+    }
+
+    // Inclusão
     const idx = quantidadeBen++;
 
     const htmlRegistro = `
@@ -111,9 +141,13 @@ function IncluirBeneficiario(beneficiario) {
     `;
 
     $('#BenTableBody').append(htmlRegistro);
+
+    // Limpando Input
+    $('#CpfBeneficiario').val("");
+    $('#NomeBeneficiario').val("");
 }
 
-function coletarBeneficiario() {
+function coletarBeneficiarios() {
     const beneficiarios = [];
 
     for (var i = 0; i < quantidadeBen; i++) {
