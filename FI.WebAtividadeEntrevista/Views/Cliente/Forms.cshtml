@@ -19,7 +19,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label for="Cpf">CPF:</label>
-                <input required="required" type="text" class="form-control" id="Cpf" name="Cpf" placeholder="Ex.: 010.011.111-00" maxlength="11">
+                <input required="required" type="text" class="form-control cpfInput" id="Cpf" name="Cpf" placeholder="Ex.: 010.011.111-00" maxlength="11">
             </div>
         </div>
         <div class="col-md-6">
@@ -109,7 +109,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="CpfBeneficiario">CPF:</label>
-                            <input required="required" type="text" class="form-control" id="CpfBeneficiario" name="CpfBeneficiario"
+                            <input required="required" type="text" class="form-control cpfInput" id="CpfBeneficiario" name="CpfBeneficiario"
                                    placeholder="Ex.: 010.011.111-00" maxlength="11">
                         </div>
                     </div>
@@ -135,24 +135,7 @@
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody id="BenTableBody">
-                            @{ int count = 0; }
-
-                            @if (@Model.Beneficiarios != null)
-                            {
-                                foreach (var beneficiario in @Model.Beneficiarios)
-                                {
-                                    <tr id="ben-@count">
-                                        <th id="ben-cpf-@count">@beneficiario.Cpf</th>
-                                        <th id="ben-nome-@count">@beneficiario.Nome</th>
-                                        <th>
-                                            <button type="button" onclick="$('#ben-@count').remove();" 
-                                                    class="btn btn-sm btn-info">Excluir</button>
-                                        </th>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
+                        <tbody id="BenTableBody"></tbody>
                     </table>
                 </div>
             </div>

@@ -1,11 +1,15 @@
 ﻿let quantidadeBen = 0;
 
 $(document).ready(function () {
+    $('.cpfInput').mask('999.999.999-99');
+
+    let cpfFormatado = obj.Cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
+
     if (obj) {
         $('#formCadastro #Nome').val(obj.Nome);
         $('#formCadastro #CEP').val(obj.CEP);
         $('#formCadastro #Email').val(obj.Email);
-        $('#formCadastro #Cpf').val(obj.Cpf);
+        $('#formCadastro #Cpf').val(cpfFormatado);
         $('#formCadastro #Sobrenome').val(obj.Sobrenome);
         $('#formCadastro #Nacionalidade').val(obj.Nacionalidade);
         $('#formCadastro #Estado').val(obj.Estado);
@@ -14,7 +18,13 @@ $(document).ready(function () {
         $('#formCadastro #Telefone').val(obj.Telefone);
     }
 
-    quantidadeBen = $('#BenTableBody tr').length;
+    if (obj.Beneficiarios.length > 0) {
+        obj.Beneficiarios.forEach(function (bn) {
+            IncluirBeneficiario(bn);
+        });
+    }
+
+    // quantidadeBen = $('#BenTableBody tr').length;
 
     $('#BtBeneficiarios').click(function () {
         $('#ModalBeneficiarios').modal('show');
@@ -48,6 +58,8 @@ $(document).ready(function () {
             ModalDialog("Erro", beneficiariosInvalidos.join('.<br>'));
             return;
         };
+
+        let cpfFormatado = $(this).find("#Cpf").val().replace(/\D/g, '');
         
         $.ajax({
             url: urlPost,
@@ -62,7 +74,7 @@ $(document).ready(function () {
                 "Cidade": $(this).find("#Cidade").val(),
                 "Logradouro": $(this).find("#Logradouro").val(),
                 "Telefone": $(this).find("#Telefone").val(),
-                "Cpf": $(this).find("#Cpf").val(),
+                "Cpf": cpfFormatado,
                 "Beneficiarios": beneficiarios
             },
             error:
@@ -119,7 +131,7 @@ function IncluirBeneficiario(beneficiario) {
     const beneficiarios = coletarBeneficiarios();
 
     const cpfExistente = beneficiarios.some(function (bn) {
-        return beneficiario.Cpf === bn.Cpf;
+        return beneficiario.Cpf.replace(/\D/g, '') === bn.Cpf;
     });
 
     if (cpfExistente) {
@@ -132,7 +144,7 @@ function IncluirBeneficiario(beneficiario) {
 
     const htmlRegistro = `
         <tr id="ben-${idx}">
-            <th id="ben-cpf-${idx}">${beneficiario.Cpf}</th>
+            <th id="ben-cpf-${idx}">${beneficiario.Cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")}</th>
             <th id="ben-nome-${idx}">${beneficiario.Nome}</th>
             <th>
                 <button type="button" onclick="$('#ben-${idx}').remove();" class="btn btn-sm btn-info">Excluir</button>
@@ -155,7 +167,7 @@ function coletarBeneficiarios() {
         const registro = $(id);
         if (registro.length > 0) {
             beneficiarios.push({
-                Cpf: $('#ben-cpf-' + i)[0].firstChild.data,
+                Cpf: $('#ben-cpf-' + i)[0].firstChild.data.replace(/\D/g, ''),
                 Nome: $('#ben-nome-' + i)[0].firstChild.data,
                 IdCliente: obj.Id
             });

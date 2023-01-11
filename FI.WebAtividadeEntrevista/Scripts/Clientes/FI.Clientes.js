@@ -17,6 +17,8 @@ $(document).ready(function () {
         IncluirBeneficiario(beneficiario);
     });
 
+    $('.cpfInput').mask('999.999.999-99');
+
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
 
@@ -34,13 +36,15 @@ $(document).ready(function () {
             return;
         };
 
+        let cpfFormatado = $(this).find("#Cpf").val().replace(/\D/g, '');
+
         $.ajax({
             url: urlPost,
             method: "POST",
             data: {
                 "NOME": $(this).find("#Nome").val(),
                 "CEP": $(this).find("#CEP").val(),
-                "Cpf": $(this).find("#Cpf").val(),
+                "Cpf": cpfFormatado,
                 "Email": $(this).find("#Email").val(),
                 "Sobrenome": $(this).find("#Sobrenome").val(),
                 "Nacionalidade": $(this).find("#Nacionalidade").val(),
@@ -103,7 +107,7 @@ function IncluirBeneficiario(beneficiario) {
     const beneficiarios = coletarBeneficiarios();
 
     const cpfExistente = beneficiarios.some(function (bn) {
-        return beneficiario.Cpf === bn.Cpf;
+        return beneficiario.Cpf.replace(/\D/g, '') === bn.Cpf;
     });
 
     if (cpfExistente) {
@@ -116,7 +120,7 @@ function IncluirBeneficiario(beneficiario) {
 
     const htmlRegistro = `
         <tr id="ben-${idx}">
-            <th id="ben-cpf-${idx}">${beneficiario.Cpf}</th>
+            <th id="ben-cpf-${idx}">${beneficiario.Cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")}</th>
             <th id="ben-nome-${idx}">${beneficiario.Nome}</th>
             <th>
                 <button type="button" onclick="$('#ben-${idx}').remove();" class="btn btn-sm btn-info">Excluir</button>
@@ -139,7 +143,7 @@ function coletarBeneficiarios() {
         const registro = $(id);
         if (registro.length > 0) {
             beneficiarios.push({
-                Cpf: $('#ben-cpf-' + i)[0].firstChild.data,
+                Cpf: $('#ben-cpf-' + i)[0].firstChild.data.replace(/\D/g, ''),
                 Nome: $('#ben-nome-' + i)[0].firstChild.data
             });
         }
