@@ -3,7 +3,7 @@
 $(document).ready(function () {
     $('.cpfInput').mask('999.999.999-99');
 
-    let cpfFormatado = obj.Cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
+    let cpfFormatado = formatarCpfCompleto(obj.Cpf);
 
     if (obj) {
         $('#formCadastro #Nome').val(obj.Nome);
@@ -59,7 +59,7 @@ $(document).ready(function () {
             return;
         };
 
-        let cpfFormatado = $(this).find("#Cpf").val().replace(/\D/g, '');
+        let cpfFormatado = formatarCpfNumerico($(this).find("#Cpf").val());
         
         $.ajax({
             url: urlPost,
@@ -131,7 +131,7 @@ function IncluirBeneficiario(beneficiario) {
     const beneficiarios = coletarBeneficiarios();
 
     const cpfExistente = beneficiarios.some(function (bn) {
-        return beneficiario.Cpf.replace(/\D/g, '') === bn.Cpf;
+        return formatarCpfNumerico(beneficiario.Cpf) === bn.Cpf;
     });
 
     if (cpfExistente) {
@@ -142,17 +142,27 @@ function IncluirBeneficiario(beneficiario) {
     // Inclusão
     const idx = quantidadeBen++;
 
+    const cpf = formatarCpfCompleto(beneficiario.Cpf);
+    const nome = beneficiario.Nome;
+
     const htmlRegistro = `
         <tr id="ben-${idx}">
-            <th id="ben-cpf-${idx}">${beneficiario.Cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")}</th>
+            <th id="ben-cpf-${idx}">${cpf}</th>
             <th id="ben-nome-${idx}">${beneficiario.Nome}</th>
             <th>
+                <button type="button" id="ben-alt-${idx}" class="btn btn-sm btn-info">Alterar</button>
                 <button type="button" onclick="$('#ben-${idx}').remove();" class="btn btn-sm btn-info">Excluir</button>
             </th>
         </tr>
     `;
 
     $('#BenTableBody').append(htmlRegistro);
+
+    // Colocando Função no botão
+    const idBotao = `#ben-alt-${idx}`;
+    $(idBotao).click(function () {
+        editarBeneficiario(cpf, nome, idx);
+    });
 
     // Limpando Input
     $('#CpfBeneficiario').val("");
@@ -167,7 +177,7 @@ function coletarBeneficiarios() {
         const registro = $(id);
         if (registro.length > 0) {
             beneficiarios.push({
-                Cpf: $('#ben-cpf-' + i)[0].firstChild.data.replace(/\D/g, ''),
+                Cpf: formatarCpfNumerico($('#ben-cpf-' + i)[0].firstChild.data),
                 Nome: $('#ben-nome-' + i)[0].firstChild.data,
                 IdCliente: obj.Id
             });
@@ -175,4 +185,51 @@ function coletarBeneficiarios() {
     }
 
     return beneficiarios;
+}
+
+function editarBeneficiario(cpf, nome, idx) {
+    const idThCpf = `#ben-cpf-${idx}`;
+    const idThNome = `#ben-nome-${idx}`;
+    const idBotao = `#ben-alt-${idx}`
+
+    // Coloca os valores nas inputs de edição
+    $('#CpfBeneficiarioAlteracao').val(cpf);
+    $('#NomeBeneficiarioAlteracao').val(nome);
+
+    // Limpa e colocar o botão para atualizar os valores
+    $('#BtAlteracaoBeneficiario').prop("onclick", null).off("click");
+    $('#BtAlteracaoBeneficiario').click(function () {
+        const cpf = $('#CpfBeneficiarioAlteracao').val();
+        const nome = $('#NomeBeneficiarioAlteracao').val();
+
+        // Atribuição do valor
+        $(idThCpf).html(cpf);
+        $(idThNome).html(nome);
+
+        // Limpar função do botão de edição e configurar uma nova
+        $(idBotao).prop("onclick", null).off("click");
+        $(idBotao).click(function () {
+            editarBeneficiario(cpf, nome, idx);
+        });
+
+        // Fechando o formulario
+        cancelarEdicao();
+    });
+
+    // Libera vizualização do formulario de edição
+    $('#formInclusao').css('display', 'none');
+    $('#formAlteracao').css('display', 'block');
+}
+
+function cancelarEdicao() {
+    // Limpar os valores dos inputs
+    $('#CpfBeneficiarioAlteracao').val('');
+    $('#NomeBeneficiarioAlteracao').val('');
+
+    // Resetando função do click
+    $('#BtAlteracaoBeneficiario').prop("onclick", null).off("click");
+
+    // Resetar a vizualização
+    $('#formInclusao').css('display', 'block');
+    $('#formAlteracao').css('display', 'none');
 }

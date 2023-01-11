@@ -105,7 +105,7 @@
                 <h4 class="modal-title">Beneficiários</h4>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <div class="row" id="formInclusao">
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="CpfBeneficiario">CPF:</label>
@@ -120,9 +120,34 @@
                                    placeholder="Ex.: João" maxlength="50">
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-4">
+                        <label style="width: 100%; color: transparent">_</label>
                         <div class="form-group">
                             <button type="button" id="BtIncluirBeneficiario" class="btn btn-sm btn-success">Incluir</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="formAlteracao" style="display: none">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="CpfBeneficiarioAlteracao">CPF:</label>
+                            <input type="text" class="form-control cpfInput" id="CpfBeneficiarioAlteracao" 
+                                   name="CpfBeneficiarioAlteracao" placeholder="Ex.: 010.011.111-00" maxlength="11">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="NomeBeneficiarioAlteracao">Nome:</label>
+                            <input type="text" class="form-control" id="NomeBeneficiarioAlteracao" name="NomeBeneficiarioAlteracao"
+                                   placeholder="Ex.: João" maxlength="50">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label style="width: 100%; color: transparent">_</label>
+                            <button type="button" id="BtAlteracaoBeneficiario" class="btn btn-sm btn-info">Alterar</button>
+                            <button type="button" id="BtCancelarOperacao" onclick="cancelarEdicao()"
+                                    class="btn btn-sm btn-danger">Cancelar</button>
                         </div>
                     </div>
                 </div>
