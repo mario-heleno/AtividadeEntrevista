@@ -35,14 +35,25 @@ namespace FI.AtividadeEntrevista.DAL
             DataSet ds = base.Consultar("FI_SP_IncClienteV2", parametros);
             long ret = 0;
             if (ds.Tables[0].Rows.Count > 0)
-                long.TryParse(ds.Tables[0].Rows[0][0].ToString(), out ret);
+
+            // Cadastrar Beneficiarios
+            if (cliente.Beneficiarios.Count > 0)
+            {
+                foreach (Beneficiario beneficiario in cliente.Beneficiarios)
+                {
+                    DaoBeneficiario daoBeneficiario = new DaoBeneficiario();
+                    daoBeneficiario.Incluir(beneficiario);
+                }
+            }
+
+            long.TryParse(ds.Tables[0].Rows[0][0].ToString(), out ret);
             return ret;
         }
 
         /// <summary>
-        /// Inclui um novo cliente
+        /// Consulta os dados de um cliente
         /// </summary>
-        /// <param name="cliente">Objeto de cliente</param>
+        /// <param name="Id">Id do cliente</param>
         internal DML.Cliente Consultar(long Id)
         {
             List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
@@ -51,8 +62,17 @@ namespace FI.AtividadeEntrevista.DAL
 
             DataSet ds = base.Consultar("FI_SP_ConsCliente", parametros);
             List<DML.Cliente> cli = Converter(ds);
+            
+            Cliente cliente = cli.FirstOrDefault();
 
-            return cli.FirstOrDefault();
+            if (cliente != null)
+            {
+                DaoBeneficiario daoBeneficiario = new DaoBeneficiario();
+                List<Beneficiario> beneficiarios = daoBeneficiario.Listar(cli.FirstOrDefault().Id);
+                cliente.Beneficiarios = beneficiarios;
+            }
+
+            return cliente;
         }
 
         internal bool VerificarExistencia(string CPF)
@@ -123,8 +143,17 @@ namespace FI.AtividadeEntrevista.DAL
             parametros.Add(new System.Data.SqlClient.SqlParameter("ID", cliente.Id));
 
             base.Executar("FI_SP_AltCliente", parametros);
+            
+            // Cadastrar Beneficiarios
+            if (cliente.Beneficiarios.Count > 0)
+            {
+                foreach(Beneficiario beneficiario in cliente.Beneficiarios)
+                {
+                    DaoBeneficiario daoBeneficiario = new DaoBeneficiario();
+                    daoBeneficiario.Incluir(beneficiario);
+                }
+            }
         }
-
 
         /// <summary>
         /// Excluir Cliente
@@ -147,6 +176,7 @@ namespace FI.AtividadeEntrevista.DAL
                 foreach (DataRow row in ds.Tables[0].Rows)
                 {
                     DML.Cliente cli = new DML.Cliente();
+
                     cli.Id = row.Field<long>("Id");
                     cli.CEP = row.Field<string>("CEP");
                     cli.Cidade = row.Field<string>("Cidade");
@@ -158,6 +188,7 @@ namespace FI.AtividadeEntrevista.DAL
                     cli.Sobrenome = row.Field<string>("Sobrenome");
                     cli.Telefone = row.Field<string>("Telefone");
                     cli.Cpf = row.Field<string>("Cpf");
+
                     lista.Add(cli);
                 }
             }

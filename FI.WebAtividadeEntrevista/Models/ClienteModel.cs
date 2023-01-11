@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FI.AtividadeEntrevista.DML;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -72,6 +73,16 @@ namespace WebAtividadeEntrevista.Models
         /// Telefone
         /// </summary>
         public string Telefone { get; set; }
+
+        /// <summary>
+        /// Beneficiários
+        /// </summary>
+        public List<Beneficiario> Beneficiarios { get; set; }
+
+        public ClienteModel()
+        {
+            Beneficiarios = new List<Beneficiario>();
+        }
 
     }    
 }

@@ -53,6 +53,11 @@ namespace WebAtividadeEntrevista.Controllers
             }
             else
             {
+                if (model.Beneficiarios == null)
+                {
+                    model.Beneficiarios = new List<Beneficiario>();
+                }
+
                 model.Id = bo.Incluir(new Cliente()
                 {                    
                     CEP = model.CEP,
@@ -64,7 +69,8 @@ namespace WebAtividadeEntrevista.Controllers
                     Nacionalidade = model.Nacionalidade,
                     Nome = model.Nome,
                     Sobrenome = model.Sobrenome,
-                    Telefone = model.Telefone
+                    Telefone = model.Telefone,
+                    Beneficiarios = model.Beneficiarios,
                 });
 
            
@@ -88,6 +94,11 @@ namespace WebAtividadeEntrevista.Controllers
             }
             else
             {
+                if (model.Beneficiarios == null)
+                {
+                    model.Beneficiarios = new List<Beneficiario>();
+                }
+
                 bo.Alterar(new Cliente()
                 {
                     Id = model.Id,
@@ -100,8 +111,9 @@ namespace WebAtividadeEntrevista.Controllers
                     Nacionalidade = model.Nacionalidade,
                     Nome = model.Nome,
                     Sobrenome = model.Sobrenome,
-                    Telefone = model.Telefone
-                });
+                    Telefone = model.Telefone,
+                    Beneficiarios = model.Beneficiarios
+                });;
                                
                 return Json("Cadastro alterado com sucesso");
             }
@@ -128,10 +140,10 @@ namespace WebAtividadeEntrevista.Controllers
                     Nacionalidade = cliente.Nacionalidade,
                     Nome = cliente.Nome,
                     Sobrenome = cliente.Sobrenome,
-                    Telefone = cliente.Telefone
+                    Telefone = cliente.Telefone,
+                    Beneficiarios = cliente.Beneficiarios
                 };
 
-            
             }
 
             return View(model);

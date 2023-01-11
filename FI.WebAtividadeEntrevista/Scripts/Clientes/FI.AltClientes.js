@@ -1,4 +1,5 @@
-﻿
+﻿let quantidadeBen = 0;
+
 $(document).ready(function () {
     if (obj) {
         $('#formCadastro #Nome').val(obj.Nome);
@@ -12,6 +13,28 @@ $(document).ready(function () {
         $('#formCadastro #Logradouro').val(obj.Logradouro);
         $('#formCadastro #Telefone').val(obj.Telefone);
     }
+
+    quantidadeBen = $('#BenTableBody tr').length;
+
+    $('#BtBeneficiarios').click(function () {
+        $('#ModalBeneficiarios').modal('show');
+    });
+
+    $('#BtIncluirBeneficiario').click(function () {
+        const cpf = $('#CpfBeneficiario').val();
+        const nome = $('#NomeBeneficiario').val();
+
+        const beneficiario = {
+            Cpf: cpf,
+            Nome: nome
+        };
+
+        IncluirBeneficiario(beneficiario);
+
+        // Limpando Input
+        $('#CpfBeneficiario').val("");
+        $('#NomeBeneficiario').val("");
+    });
 
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
@@ -29,7 +52,8 @@ $(document).ready(function () {
                 "Cidade": $(this).find("#Cidade").val(),
                 "Logradouro": $(this).find("#Logradouro").val(),
                 "Telefone": $(this).find("#Telefone").val(),
-                "Cpf": $(this).find("#Cpf").val()
+                "Cpf": $(this).find("#Cpf").val(),
+                "Beneficiarios": coletarBeneficiario()
             },
             error:
             function (r) {
@@ -71,4 +95,38 @@ function ModalDialog(titulo, texto) {
 
     $('body').append(texto);
     $('#' + random).modal('show');
+}
+
+function IncluirBeneficiario(beneficiario) {
+    const idx = quantidadeBen++;
+
+    const htmlRegistro = `
+        <tr id="ben-${idx}">
+            <th id="ben-cpf-${idx}">${beneficiario.Cpf}</th>
+            <th id="ben-nome-${idx}">${beneficiario.Nome}</th>
+            <th>
+                <button type="button" onclick="$('#ben-${idx}').remove();" class="btn btn-sm btn-info">Excluir</button>
+            </th>
+        </tr>
+    `;
+
+    $('#BenTableBody').append(htmlRegistro);
+}
+
+function coletarBeneficiario() {
+    const beneficiarios = [];
+
+    for (var i = 0; i < quantidadeBen; i++) {
+        const id = '#ben-' + i;
+        const registro = $(id);
+        if (registro.length > 0) {
+            beneficiarios.push({
+                Cpf: $('#ben-cpf-' + i)[0].firstChild.data,
+                Nome: $('#ben-nome-' + i)[0].firstChild.data,
+                IdCliente: obj.Id
+            });
+        }
+    }
+
+    return beneficiarios;
 }
