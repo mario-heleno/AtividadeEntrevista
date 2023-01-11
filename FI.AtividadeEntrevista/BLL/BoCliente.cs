@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FI.AtividadeEntrevista.DML;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,13 +16,6 @@ namespace FI.AtividadeEntrevista.BLL
         public long Incluir(DML.Cliente cliente)
         {
             DAL.DaoCliente cli = new DAL.DaoCliente();
-
-            bool CpfValido = cli.VerificarExistencia(cliente.Cpf);
-
-            if (CpfValido)
-            {
-                return 0;
-            }
 
             return cli.Incluir(cliente);
         }
@@ -74,6 +68,16 @@ namespace FI.AtividadeEntrevista.BLL
         {
             DAL.DaoCliente cli = new DAL.DaoCliente();
             return cli.Pesquisa(iniciarEm,  quantidade, campoOrdenacao, crescente, out qtd);
+        }
+
+        /// <summary>
+        /// VerificaExistencia
+        /// </summary>
+        /// <param name="CPF"></param>
+        /// <returns></returns>
+        public bool VerificarValidadeCpf(string CPF)
+        {
+            return CpfValidator.cpfValido(CPF);
         }
 
         /// <summary>

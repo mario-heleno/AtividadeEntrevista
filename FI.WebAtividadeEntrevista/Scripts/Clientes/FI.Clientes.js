@@ -1,5 +1,9 @@
 ﻿
 $(document).ready(function () {
+    $('#BtBeneficiarios').click(function () {
+        ModalDialog('Beneficiários', 'Loading');
+    });
+
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
         $.ajax({

@@ -27,7 +27,9 @@ namespace WebAtividadeEntrevista.Controllers
         public JsonResult Incluir(ClienteModel model)
         {
             BoCliente bo = new BoCliente();
-            
+            bool CpfExistente = bo.VerificarExistencia(model.Cpf);
+            bool CpfValido = bo.VerificarValidadeCpf(model.Cpf);
+
             if (!this.ModelState.IsValid)
             {
                 List<string> erros = (from item in ModelState.Values
@@ -37,9 +39,20 @@ namespace WebAtividadeEntrevista.Controllers
                 Response.StatusCode = 400;
                 return Json(string.Join(Environment.NewLine, erros));
             }
+            else if (CpfExistente)
+            {
+                List<string> erros = new List<string> {"CPF já cadastrado na base"};
+                Response.StatusCode = 400;
+                return Json(string.Join(Environment.NewLine, erros));
+            }
+            else if (!CpfValido)
+            {
+                List<string> erros = new List<string> {"CPF inválido, por favor revisar"};
+                Response.StatusCode = 400;
+                return Json(string.Join(Environment.NewLine, erros));
+            }
             else
             {
-                
                 model.Id = bo.Incluir(new Cliente()
                 {                    
                     CEP = model.CEP,
